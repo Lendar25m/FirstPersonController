@@ -209,14 +209,7 @@ public class Controller : MonoBehaviour
                 Time.time > m_LastTimeDashed + dashTimeDelay
             )
             {
-                m_LastTimeDashed = Time.time;
-                m_DashingDirection =
-                    (
-                    m_PlayerInput != Vector3.zero &&
-                    !onlyForwardDashingDirection
-                    )
-                        ? m_PlayerInput
-                        : transform.forward;
+                EnterDashing();
                 m_PlayerState = Mode.Dashing;
             }
         }
@@ -273,6 +266,7 @@ public class Controller : MonoBehaviour
                     break;
             }
             m_Controller.Move(m_CharacterVelocity * Time.deltaTime);
+            Debug.DrawRay(transform.position, m_CharacterVelocity * Time.deltaTime * 40, Color.green);
         }
     }
 
@@ -372,6 +366,15 @@ public class Controller : MonoBehaviour
         lastWallRayCastHit.collider.tag == "Allow WallRun";
     }
 
+    void EnterDashing()
+    {
+        m_LastTimeDashed = Time.time;
+        m_DashingDirection =
+            (m_PlayerInput != Vector3.zero && !onlyForwardDashingDirection)
+                ? m_PlayerInput
+                : transform.forward;
+    }
+
     Vector3 GetWallJumpDirection()
     {
         return lastWallRayCastHit.normal * wallBouncing + Vector3.up;
@@ -406,8 +409,10 @@ public class Controller : MonoBehaviour
             m_CharacterVelocity =
                 Vector3.ProjectOnPlane(m_CharacterVelocity, hit.normal);
 
+        Debug.DrawRay(transform.position, hit.normal * 1.5f, Color.red);
         // if (m_PlayerState == Mode.Dashing)
         //     m_PlayerState = (!_IsGrounded) ? Mode.Flying : Mode.Dashing;
     }
 #endregion
 }
+
